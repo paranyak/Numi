@@ -14,7 +14,7 @@ const numiReducer = handleActions({
             console.log(actionExp, " AFTER REPLACE: ", expression);
 
             let newState = {...state, error: false, data: {exp:actionExp, resultingExp:expression}};
-            let result = state.result;
+            let result = [...state.result];
             result[result.length-1] = "";
 
             try {
@@ -29,7 +29,7 @@ const numiReducer = handleActions({
                 return newState},
         [types.SAVE_EXP]:
             (state, action) => {
-            let result = state.result;
+            let result = [...state.result];
             result.push("");
             let newState = {...state, result: result};
             return newState;

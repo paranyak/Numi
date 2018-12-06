@@ -60,6 +60,7 @@ class App extends Component {
 
     render() {
         const { numi } = this.props;
+        console.log(numi);
         return (
             <div className="numi">
                 <textarea className="numi-expression" onChange={(e) => this.handleKeyUp(e, 'expression')} onKeyDown={(e) => this.saveExp(e)}></textarea>

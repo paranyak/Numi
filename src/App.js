@@ -5,26 +5,44 @@ import {bindActionCreators} from 'redux';
 import numiActions from './duck/numi/actions';
 
 class App extends Component {
-    // constructor(props) {
-    //     super(props);
-    // }
+    constructor(props) {
+        super(props);
+        this.state={
+            expression: '',
+            result: '',
+            timer: 0
+        };
 
-    handleExp(e){
-        console.log("HERE", numiActions);
-        e.preventDefault();
-        const { countExpression } = this.props;
-        console.log("EXP", countExpression);
-        countExpression("5+7");
+        this.handleExp = this.handleExp.bind(this);
 
     }
 
-    render() {
+    handleExp(){
+        console.log("EXPRESSION START", this.state.timer);
+        const { expression } = this.state;
+        const { countExpression } = this.props;
+        countExpression(expression);
+    }
 
+
+    handleKeyUp(event, type){
+        let { timer }  = this.state;
+        clearTimeout(timer);
+        timer=setTimeout(this.handleExp,500);
+
+        const newState = {};
+        newState[type] = event.target.value;
+        newState['timer'] = timer;
+        this.setState(newState);
+    }
+
+    render() {
+        const { numi } = this.props;
+        console.log("NUMI RENDER: ", numi);
         return (
             <div className="numi">
-                <textarea className="numi-expression"></textarea>
-                <textarea className="numi-result"></textarea>
-                <input type="submit" value="count" onClick={(e) => this.handleExp(e)}/>
+                <textarea className="numi-expression" onChange={(e) => this.handleKeyUp(e, 'expression')}></textarea>
+                <textarea className="numi-result" value={numi.result}></textarea>
             </div>
         );
     }

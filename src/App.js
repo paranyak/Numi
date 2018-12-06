@@ -18,6 +18,16 @@ class App extends Component {
 
     }
 
+    saveExp(event){
+        const code = event.keyCode;
+        console.log(event, code);
+        if(code == 13) { //Enter keycode
+            console.log("ENTER KEY");
+            const { saveExpression } = this.props;
+            saveExpression();
+        }
+    }
+
     handleExp(expression){
         const { countExpression } = this.props;
         countExpression(expression);
@@ -27,9 +37,11 @@ class App extends Component {
     handleKeyUp(event, type){
         const newState = {};
         let expression = event.target.value;
-        newState[type] = expression;
+        let lines = expression.split('\n');    // lines is an array of all lines in textarea
+        console.log(lines);
+        newState[type] = lines[lines.length -1];
         this.setState(newState);
-        this.handleExp(expression);
+        this.handleExp(lines[lines.length -1]);
     }
 
     async reloadInformation(){
@@ -50,8 +62,8 @@ class App extends Component {
         const { numi } = this.props;
         return (
             <div className="numi">
-                <textarea className="numi-expression" onChange={(e) => this.handleKeyUp(e, 'expression')}></textarea>
-                <textarea className="numi-result" value={numi.result}></textarea>
+                <textarea className="numi-expression" onChange={(e) => this.handleKeyUp(e, 'expression')} onKeyDown={(e) => this.saveExp(e)}></textarea>
+                <textarea className="numi-result" value={numi.result.join('\n')}></textarea>
                 <button className="numi-reload" onClick={this.reloadInformation}>Reload</button>
             </div>
 
@@ -65,7 +77,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = dispatch => bindActionCreators({
     countExpression: numiActions.countExp,
-
+    saveExpression: numiActions.saveExp,
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

@@ -4,19 +4,28 @@ import * as types from './types';
 const numiReducer = handleActions({
         [types.COUNT_EXP]:
             (state, action) => {
-            let newState = {...state, error: false};
+            const actionExp = action.payload.exp;
+            const storedData = JSON.parse(localStorage.getItem("fixerData"))[0];
+            // console.log(storedData);
+            const variables = Object.keys(storedData).join("|");
+            let expression = actionExp.toUpperCase().replace(new RegExp(variables, "g"), (key) => "*" +storedData[key]);
+            expression = expression.replace(/(?!-)[^0-9.,+%*/()]/g, "");
+            console.log(actionExp, " AFTER REPLACE: ", expression);
+
+            let newState = {...state, error: false, data: actionExp};
             try {
-                let result = eval(action.payload.exp);
+                const result = expression ? eval(expression) : '';
                 newState["result"] = result;
-                console.log("result", result);
             } catch (e) {
                 newState["error"] = true;
+                newState["result"] = '';
             }
             return newState},
     },
     {
         error: false,
         result: null,
+        data: null
     });
 
 

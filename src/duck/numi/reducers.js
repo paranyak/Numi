@@ -4,13 +4,15 @@ import * as types from './types';
 const numiReducer = handleActions({
         [types.COUNT_EXP]:
             (state, action) => {
-            const result = eval(action.payload.exp);
-            console.log("result", result);
-                return {
-                ...state,
-                result,
-                error: true
-            }},
+            let newState = {...state, error: false};
+            try {
+                let result = eval(action.payload.exp);
+                newState["result"] = result;
+                console.log("result", result);
+            } catch (e) {
+                newState["error"] = true;
+            }
+            return newState},
     },
     {
         error: false,

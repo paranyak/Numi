@@ -4,7 +4,8 @@ import * as types from './types';
 const numiActions = createActions(
     {
         [types.COUNT_EXP]: (exp) => ({ exp }),
-        [types.SAVE_EXP]: (exp) => ({exp})
+        [types.SAVE_EXP]: (exp) => ({exp}),
+        [types.COUNT_TOTAL]: (exp) => ({exp})
 
     },
 );

@@ -5,7 +5,8 @@ const numiActions = createActions(
     {
         [types.COUNT_EXP]: (exp) => ({ exp }),
         [types.SAVE_EXP]: (exp) => ({exp}),
-        [types.COUNT_TOTAL]: (exp) => ({exp})
+        [types.COUNT_TOTAL]: (exp) => ({exp}),
+        [types.CREATE_VAR] : (variable) => ({variable})
 
     },
 );

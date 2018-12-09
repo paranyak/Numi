@@ -39,12 +39,19 @@ class App extends Component {
 
     handleKeyUp(event, type){
         const newState = {};
+        const { createVar } = this.props;
         let expression = event.target.value;
         let lines = expression.split('\n');    // lines is an array of all lines in textarea
-        newState[type] = lines[lines.length -1];
+        let currentLine = lines[lines.length -1] ;
+        newState[type] = currentLine;
         this.setState(newState);
-        if(lines[lines.length-1].toLowerCase() === "total") this.countTotal();
-        else this.handleExp(lines[lines.length -1]);
+        if(currentLine.toLowerCase() === "total") this.countTotal();
+        else if(currentLine.indexOf(':') !== -1) {
+            let variableIndex = currentLine.indexOf(':');
+            this.handleExp(currentLine.slice(variableIndex));
+            createVar(currentLine.slice(0, variableIndex));
+        }
+        else this.handleExp(currentLine);
     }
 
     async reloadInformation(){
@@ -82,6 +89,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     countExpression: numiActions.countExp,
     saveExpression: numiActions.saveExp,
     countTotal: numiActions.countTotal,
+    createVar: numiActions.createVar
 }, dispatch);
 
 export default connect(mapStateToProps, mapDispatchToProps)(App);

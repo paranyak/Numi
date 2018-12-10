@@ -10,6 +10,7 @@ const numiActions = createActions({
     [types.SAVE_EXP]: exp => ({ exp }),
     [types.COUNT_TOTAL]: ind => ({ ind }),
     [types.CREATE_VAR]: (variable, ind) => ({ variable, ind }),
+    [types.DELETE_EXP]: (ind) => ({ind}),
 });
 
 export default numiActions;

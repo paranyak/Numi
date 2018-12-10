@@ -38,24 +38,34 @@ class App extends Component {
     countDifference(event) {
         let expression = event.target.value;
         let lines = expression.split('\n'); // lines is an array of all lines in textarea
-        let differenceIndex = -1;
-        console.log(lines, this.state.expressions);
+        let differenceIndex = [];
+        console.log("lines", lines, " in state ",  this.state.expressions);
         //get index of changed line
-        lines.filter((exp, ind) => {
-            if (this.state.expressions[ind] !== exp) {
-                differenceIndex = ind;
+        this.state.expressions.filter((exp, ind) => {
+            if (lines[ind] !== exp) {
+                console.log(differenceIndex);
+                differenceIndex.push(ind);
                 return true;
             }
         });
+        differenceIndex = differenceIndex[0];
+        console.log(differenceIndex);
+        console.log(lines, this.state.expressions, differenceIndex);
         this.setState({ expressions: lines });
         let currentLine = lines[differenceIndex];
-        return { currentLine, differenceIndex };
+        let deleted = false;
+        if(this.state.expressions.length > lines.length) deleted = true;
+        return { currentLine, differenceIndex, deleted };
     }
 
     handleChange(event) {
-        const { createVar } = this.props;
-        const { currentLine, differenceIndex } = this.countDifference(event);
-        if (currentLine) {
+        const { createVar, deleteExpression } = this.props;
+        const { currentLine, differenceIndex , deleted} = this.countDifference(event);
+        console.log(currentLine, differenceIndex , deleted);
+        if (deleted){
+            deleteExpression(differenceIndex);
+        }
+        else if (currentLine) {
             if (currentLine.toLowerCase() === 'total')
                 this.countTotal(differenceIndex);
             else if (currentLine.indexOf(':') !== -1) {
@@ -65,6 +75,7 @@ class App extends Component {
                 createVar(currentLine.slice(0, variableIndex), differenceIndex);
             } else this.handleExp(currentLine, differenceIndex);
         }
+
     }
 
     async reloadInformation() {
@@ -82,6 +93,11 @@ class App extends Component {
             fixerData.push(result.rates);
             localStorage.setItem('fixerData', JSON.stringify(fixerData));
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        console.log("NEXT STATE", nextState, "this state: ", this.state)
+        return true;
     }
 
     render() {
@@ -116,6 +132,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch =>
     bindActionCreators(
         {
+            deleteExpression: numiActions.deleteExp,
             countExpression: numiActions.countExp,
             saveExpression: numiActions.saveExp,
             countTotal: numiActions.countTotal,

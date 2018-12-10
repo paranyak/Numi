@@ -54,14 +54,17 @@ class App extends Component {
     handleChange(event) {
         const { createVar } = this.props;
         const { currentLine, differenceIndex } = this.countDifference(event);
-        if (currentLine.toLowerCase() === 'total')
-            this.countTotal(differenceIndex);
-        else if (currentLine.indexOf(':') !== -1) {
-            // if it is assigning variable
-            let variableIndex = currentLine.indexOf(':');
-            this.handleExp(currentLine, differenceIndex, variableIndex);
-            createVar(currentLine.slice(0, variableIndex), differenceIndex);
-        } else this.handleExp(currentLine, differenceIndex);
+        console.log('CURRENT', currentLine);
+        if (currentLine) {
+            if (currentLine.toLowerCase() === 'total')
+                this.countTotal(differenceIndex);
+            else if (currentLine.indexOf(':') !== -1) {
+                // if it is assigning variable
+                let variableIndex = currentLine.indexOf(':');
+                this.handleExp(currentLine, differenceIndex, variableIndex);
+                createVar(currentLine.slice(0, variableIndex), differenceIndex);
+            } else this.handleExp(currentLine, differenceIndex);
+        }
     }
 
     async reloadInformation() {

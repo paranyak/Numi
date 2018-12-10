@@ -39,6 +39,7 @@ class App extends Component {
         let expression = event.target.value;
         let lines = expression.split('\n'); // lines is an array of all lines in textarea
         let differenceIndex = -1;
+        console.log(lines, this.state.expressions);
         //get index of changed line
         lines.filter((exp, ind) => {
             if (this.state.expressions[ind] !== exp) {
@@ -54,7 +55,6 @@ class App extends Component {
     handleChange(event) {
         const { createVar } = this.props;
         const { currentLine, differenceIndex } = this.countDifference(event);
-        console.log('CURRENT', currentLine);
         if (currentLine) {
             if (currentLine.toLowerCase() === 'total')
                 this.countTotal(differenceIndex);
@@ -90,8 +90,8 @@ class App extends Component {
             <div className="numi">
                 <textarea
                     className="numi-expression"
+                    onKeyUp={e => this.saveExp(e)}
                     onChange={e => this.handleChange(e)}
-                    onKeyDown={e => this.saveExp(e)}
                 />
                 <textarea
                     className="numi-result"

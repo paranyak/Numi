@@ -53,6 +53,7 @@ const numiReducer = handleActions(
             };
             let result = [...state.result];
             result[differenceIndex] = '';
+            console.log("IN COUNT EXP", expression);
 
             try {
                 const resultExp = expression ? eval(expression) : '';
@@ -72,6 +73,7 @@ const numiReducer = handleActions(
             let newState = { ...state, result: result };
             return newState;
         },
+
 
         [types.COUNT_TOTAL]: (state, action) => {
             let differenceIndex = action.payload.ind;

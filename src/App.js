@@ -56,7 +56,8 @@ class App extends Component {
         const { currentLine, differenceIndex } = this.countDifference(event);
         if (currentLine.toLowerCase() === 'total')
             this.countTotal(differenceIndex);
-        else if (currentLine.indexOf(':') !== -1) {     // if it is assigning variable
+        else if (currentLine.indexOf(':') !== -1) {
+            // if it is assigning variable
             let variableIndex = currentLine.indexOf(':');
             this.handleExp(currentLine, differenceIndex, variableIndex);
             createVar(currentLine.slice(0, variableIndex), differenceIndex);
@@ -80,11 +81,6 @@ class App extends Component {
         }
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        console.log('NEW STATE: ', nextState, this.state);
-        return true;
-    }
-
     render() {
         const { numi } = this.props;
         return (
@@ -96,6 +92,7 @@ class App extends Component {
                 />
                 <textarea
                     className="numi-result"
+                    readOnly={true}
                     value={numi.result.join('\n')}
                 />
                 <button

@@ -8,7 +8,6 @@ const numiReducer = handleActions(
             let expression = actionExp;
             let variableIndex = action.payload.variableIndex;
             let differenceIndex = action.payload.ind;
-            console.log('COUNT EXP: ', differenceIndex);
             if (variableIndex) expression = actionExp.slice(variableIndex + 1);
             // data from Fixer
             if (localStorage.getItem('fixerData')) {
@@ -70,30 +69,27 @@ const numiReducer = handleActions(
         [types.SAVE_EXP]: (state, action) => {
             let result = [...state.result];
             result.push('');
-            let newState = { ...state, result: result};
+            let newState = { ...state, result: result };
             return newState;
         },
 
         [types.COUNT_TOTAL]: (state, action) => {
             let differenceIndex = action.payload.ind;
-            console.log("COUNT TOTAL:", differenceIndex);
             let result = state.result.slice(0, differenceIndex);
             let total_result = result.reduce(
                 (sum, current) => sum + current,
                 0
             );
             result[differenceIndex] = total_result;
-            let newState = { ...state, result: result};
+            let newState = { ...state, result: result };
             return newState;
         },
 
         [types.CREATE_VAR]: (state, action) => {
-            console.log('ACTION:', action);
             let variable = action.payload.variable.toLowerCase();
             let localVars = { ...state.localVars };
             let differenceIndex = action.payload.ind;
             localVars[variable] = state.result[differenceIndex];
-            console.log('CREATE VAR:', localVars);
             let newState = { ...state, localVars };
             return newState;
         },

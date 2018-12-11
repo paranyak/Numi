@@ -4,66 +4,16 @@ import * as types from './types';
 const numiReducer = handleActions(
     {
         [types.COUNT_EXP]: (state, action) => {
-            const actionExp = action.payload.exp;
-            let expression = actionExp;
-            let variableIndex = action.payload.variableIndex;
-            let differenceIndex = action.payload.ind;
-            if (variableIndex) expression = actionExp.slice(variableIndex + 1);
-            console.log("count exp", actionExp);
-            // data from Fixer
-            if (localStorage.getItem('fixerData')) {
-                const storedData = JSON.parse(
-                    localStorage.getItem('fixerData')
-                )[0];
-                const variables = Object.keys(storedData).join('|');
-                expression = expression
-                    .toUpperCase()
-                    .replace(
-                        new RegExp(variables, 'g'),
-                        key => '*' + storedData[key]
-                    );
-            }
-            //local variables
-            const localVariables = Object.keys(state.localVars).join('|');
-            if (localVariables) {
-                expression = expression
-                    .toLowerCase()
-                    .replace(
-                        new RegExp(localVariables, 'g'),
-                        key => state.localVars[key]
-                    );
-            }
-            // local operators
-            const localOperators = Object.values(state.localOperators);
-            localOperators.map((operatorArray, i) => {
-                operatorArray.map(operator => {
-                    if (expression.toLowerCase().indexOf(operator) !== -1) {
-                        expression = expression
-                            .toLowerCase()
-                            .replace(
-                                operator,
-                                Object.keys(state.localOperators)[i]
-                            );
-                    }
-                });
-            });
-
+            const error = action.payload.res.error;
+            const resultExp = action.payload.res.result;
+            const differenceIndex = action.payload.ind;
+            let result = [...state.result];
+            result[differenceIndex] = resultExp;
             let newState = {
                 ...state,
-                error: false,
+                error,
+                result,
             };
-            let result = [...state.result];
-            result[differenceIndex] = '';
-
-            try {
-                const resultExp = expression ? eval(expression) : '';
-                result[differenceIndex] = resultExp;
-                newState['result'] = result;
-            } catch (e) {
-                newState['error'] = true;
-            }
-            newState['result'] = result;
-
             return newState;
         },
 
@@ -76,7 +26,6 @@ const numiReducer = handleActions(
 
         [types.DELETE_EXP]: (state, action) => {
             let deletedIndex = action.payload.ind;
-            console.log("DELETED IN REDUCER: ", deletedIndex);
             let result = [...state.result];
             result.splice(deletedIndex, 1);
             let newState = { ...state, result: result };

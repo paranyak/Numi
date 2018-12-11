@@ -5,6 +5,7 @@ import { bindActionCreators } from 'redux';
 import numiActions from './duck/numi/actions';
 
 import './styles/App.sass';
+import {numiOperations} from "./duck/numi";
 
 class App extends Component {
     constructor(props) {
@@ -30,9 +31,9 @@ class App extends Component {
         countTotal(differenceIndex);
     }
 
-    handleExp(expression, differenceIndex, variableIndex) {
+    handleExp({expression, differenceIndex, variableIndex}) {
         const { countExpression } = this.props;
-        countExpression(expression, differenceIndex, variableIndex);
+        countExpression({expression, differenceIndex, variableIndex});
     }
 
     countDifference(event) {
@@ -40,7 +41,6 @@ class App extends Component {
         let lines = expression.split('\n');
         let differenceIndex = [];
         if (this.state.expressions.length > lines.length) {
-            console.log('DElete process');
             this.state.expressions.filter((exp, ind) => {
                 if (lines[ind] !== exp) {
                     differenceIndex.push(ind);
@@ -59,20 +59,12 @@ class App extends Component {
         this.setState({ expressions: lines });
         let currentLines = [];
         for (let i = 0; i < differenceIndex.length; i++) {
-            if(differenceIndex[i] < lines.length)currentLines.push(lines[differenceIndex[i]]);
+            if (differenceIndex[i] < lines.length)
+                currentLines.push(lines[differenceIndex[i]]);
         }
 
         let deleted = false;
         let changesLines = this.state.expressions.length - lines.length;
-        console.log(
-            'DIFF LEN: ',
-            changesLines,
-            'CURRENT LINES TO REMOVE',
-            currentLines,
-            'indexes',
-            differenceIndex
-        );
-        console.log('DIFF: ', lines, this.state.expressions);
         if (changesLines >= 1)
             return {
                 currentLines,
@@ -89,7 +81,9 @@ class App extends Component {
     }
 
     handleChange(event) {
+
         const { createVar, deleteExpression } = this.props;
+        // handleExp({expression: '12 USD add 15', differenceIndex: 0 });
         const {
             currentLines,
             differenceIndex,
@@ -98,30 +92,27 @@ class App extends Component {
         } = this.countDifference(event);
         if (deleted) {
             for (let i = changesLines - 1; i >= 0; i--) {
-                console.log('i: ', i, 'diff indexes', differenceIndex);
                 deleteExpression(differenceIndex[i]);
             }
         }
         if (currentLines) {
             for (let i = 0; i < currentLines.length; i++) {
-                    console.log("CURRENT LINE I: ", currentLines[i])
-                    if (currentLines[i].toLowerCase() === 'total')
-                        this.countTotal(differenceIndex[i]);
-                    else if (currentLines[i].indexOf(':') !== -1) {
-                        // if it is assigning variable
-                        let variableIndex = currentLines[i].indexOf(':');
-                        this.handleExp(
-                            currentLines[i],
-                            differenceIndex[i],
-                            variableIndex
-                        );
-                        createVar(
-                            currentLines[i].slice(0, variableIndex),
-                            differenceIndex[i]
-                        );
-                    } else this.handleExp(currentLines[i], differenceIndex[i]);
-                }
-
+                if (currentLines[i].toLowerCase() === 'total')
+                    this.countTotal(differenceIndex[i]);
+                else if (currentLines[i].indexOf(':') !== -1) {
+                    // if it is assigning variable
+                    let variableIndex = currentLines[i].indexOf(':');
+                    this.handleExp({
+                        expression: currentLines[i],
+                        differenceIndex: differenceIndex[i],
+                        variableIndex
+                    });
+                    createVar(
+                        currentLines[i].slice(0, variableIndex),
+                        differenceIndex[i]
+                    );
+                } else this.handleExp({expression: currentLines[i], differenceIndex: differenceIndex[i]});
+            }
         }
     }
 
@@ -175,7 +166,7 @@ const mapDispatchToProps = dispatch =>
     bindActionCreators(
         {
             deleteExpression: numiActions.deleteExp,
-            countExpression: numiActions.countExp,
+            countExpression: numiOperations.handleExpressionOperation,
             saveExpression: numiActions.saveExp,
             countTotal: numiActions.countTotal,
             createVar: numiActions.createVar,

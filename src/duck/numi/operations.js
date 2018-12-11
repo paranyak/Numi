@@ -14,6 +14,7 @@ const handleExpressionOperation = ({
     dispatch(numiActions.countExp(expressionResult, differenceIndex));
 
     //try to make compose
+
     // const example = compose(
     //     getLocalOperators,
     //     getLocalVariables,

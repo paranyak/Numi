@@ -17,7 +17,7 @@ const numiReducer = handleActions(
             return newState;
         },
 
-        [types.SAVE_EXP]: (state, action) => {
+        [types.SAVE_EXP]: state => {
             let result = [...state.result];
             result.push('');
             let newState = { ...state, result: result };

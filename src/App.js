@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import numiActions from './duck/numi/actions';
+import numiActions from './duck/numi';
+import { numiOperations } from './duck/numi';
+import { NEW_LINE, TOTAL } from './constants';
 
 import './styles/App.sass';
-import {numiOperations} from "./duck/numi";
 
 class App extends Component {
     constructor(props) {
@@ -20,7 +21,7 @@ class App extends Component {
 
     saveExp(event) {
         const code = event.keyCode;
-        if (code === 13) {
+        if (code === NEW_LINE) {
             const { saveExpression } = this.props;
             saveExpression();
         }
@@ -31,9 +32,9 @@ class App extends Component {
         countTotal(differenceIndex);
     }
 
-    handleExp({expression, differenceIndex, variableIndex}) {
+    handleExp({ expression, differenceIndex, variableIndex }) {
         const { countExpression } = this.props;
-        countExpression({expression, differenceIndex, variableIndex});
+        countExpression({ expression, differenceIndex, variableIndex });
     }
 
     countDifference(event) {
@@ -81,9 +82,7 @@ class App extends Component {
     }
 
     handleChange(event) {
-
         const { createVar, deleteExpression } = this.props;
-        // handleExp({expression: '12 USD add 15', differenceIndex: 0 });
         const {
             currentLines,
             differenceIndex,
@@ -97,7 +96,7 @@ class App extends Component {
         }
         if (currentLines) {
             for (let i = 0; i < currentLines.length; i++) {
-                if (currentLines[i].toLowerCase() === 'total')
+                if (currentLines[i].toLowerCase() === TOTAL)
                     this.countTotal(differenceIndex[i]);
                 else if (currentLines[i].indexOf(':') !== -1) {
                     // if it is assigning variable
@@ -105,13 +104,17 @@ class App extends Component {
                     this.handleExp({
                         expression: currentLines[i],
                         differenceIndex: differenceIndex[i],
-                        variableIndex
+                        variableIndex,
                     });
                     createVar(
                         currentLines[i].slice(0, variableIndex),
                         differenceIndex[i]
                     );
-                } else this.handleExp({expression: currentLines[i], differenceIndex: differenceIndex[i]});
+                } else
+                    this.handleExp({
+                        expression: currentLines[i],
+                        differenceIndex: differenceIndex[i],
+                    });
             }
         }
     }

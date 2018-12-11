@@ -37,45 +37,92 @@ class App extends Component {
 
     countDifference(event) {
         let expression = event.target.value;
-        let lines = expression.split('\n'); // lines is an array of all lines in textarea
+        let lines = expression.split('\n');
         let differenceIndex = [];
-        console.log("lines", lines, " in state ",  this.state.expressions);
-        //get index of changed line
-        this.state.expressions.filter((exp, ind) => {
-            if (lines[ind] !== exp) {
-                console.log(differenceIndex);
-                differenceIndex.push(ind);
-                return true;
-            }
-        });
-        differenceIndex = differenceIndex[0];
-        console.log(differenceIndex);
-        console.log(lines, this.state.expressions, differenceIndex);
+        if (this.state.expressions.length > lines.length) {
+            console.log('DElete process');
+            this.state.expressions.filter((exp, ind) => {
+                if (lines[ind] !== exp) {
+                    differenceIndex.push(ind);
+                    return true;
+                }
+            });
+        } else {
+            lines.filter((exp, ind) => {
+                if (this.state.expressions[ind] !== exp) {
+                    differenceIndex.push(ind);
+                    return true;
+                }
+            });
+        }
+
         this.setState({ expressions: lines });
-        let currentLine = lines[differenceIndex];
+        let currentLines = [];
+        for (let i = 0; i < differenceIndex.length; i++) {
+            if(differenceIndex[i] < lines.length)currentLines.push(lines[differenceIndex[i]]);
+        }
+
         let deleted = false;
-        if(this.state.expressions.length > lines.length) deleted = true;
-        return { currentLine, differenceIndex, deleted };
+        let changesLines = this.state.expressions.length - lines.length;
+        console.log(
+            'DIFF LEN: ',
+            changesLines,
+            'CURRENT LINES TO REMOVE',
+            currentLines,
+            'indexes',
+            differenceIndex
+        );
+        console.log('DIFF: ', lines, this.state.expressions);
+        if (changesLines >= 1)
+            return {
+                currentLines,
+                differenceIndex,
+                deleted: true,
+                changesLines,
+            };
+        return {
+            currentLines,
+            differenceIndex,
+            deleted,
+            changesLines,
+        };
     }
 
     handleChange(event) {
         const { createVar, deleteExpression } = this.props;
-        const { currentLine, differenceIndex , deleted} = this.countDifference(event);
-        console.log(currentLine, differenceIndex , deleted);
-        if (deleted){
-            deleteExpression(differenceIndex);
+        const {
+            currentLines,
+            differenceIndex,
+            deleted,
+            changesLines,
+        } = this.countDifference(event);
+        if (deleted) {
+            for (let i = changesLines - 1; i >= 0; i--) {
+                console.log('i: ', i, 'diff indexes', differenceIndex);
+                deleteExpression(differenceIndex[i]);
+            }
         }
-        else if (currentLine) {
-            if (currentLine.toLowerCase() === 'total')
-                this.countTotal(differenceIndex);
-            else if (currentLine.indexOf(':') !== -1) {
-                // if it is assigning variable
-                let variableIndex = currentLine.indexOf(':');
-                this.handleExp(currentLine, differenceIndex, variableIndex);
-                createVar(currentLine.slice(0, variableIndex), differenceIndex);
-            } else this.handleExp(currentLine, differenceIndex);
-        }
+        if (currentLines) {
+            for (let i = 0; i < currentLines.length; i++) {
+                    console.log("CURRENT LINE I: ", currentLines[i])
+                    if (currentLines[i].toLowerCase() === 'total')
+                        this.countTotal(differenceIndex[i]);
+                    else if (currentLines[i].indexOf(':') !== -1) {
+                        // if it is assigning variable
+                        let variableIndex = currentLines[i].indexOf(':');
+                        this.handleExp(
+                            currentLines[i],
+                            differenceIndex[i],
+                            variableIndex
+                        );
+                        createVar(
+                            currentLines[i].slice(0, variableIndex),
+                            differenceIndex[i]
+                        );
+                    } else this.handleExp(currentLines[i], differenceIndex[i]);
+                }
 
+        }
     }
 
     async reloadInformation() {
@@ -93,11 +140,6 @@ class App extends Component {
             fixerData.push(result.rates);
             localStorage.setItem('fixerData', JSON.stringify(fixerData));
         }
-    }
-
-    shouldComponentUpdate(nextProps, nextState) {
-        console.log("NEXT STATE", nextState, "this state: ", this.state)
-        return true;
     }
 
     render() {

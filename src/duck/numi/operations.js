@@ -10,9 +10,7 @@ const handleExpressionOperation = ({
     const { calculator } = getState();
     if (variableIndex) expression = expression.slice(variableIndex + 1);
     if(differenceIndex)expression = expression.replace('prev', calculator.result[differenceIndex-1]);
-    console.log("exp", expression);
-    if(expression.indexOf("in" !== -1))expression = cssConvert(expression, calculator.cssCovert);
-    console.log("exp", expression);
+    if(expression.indexOf("in") !== -1)expression = cssConvert(expression, calculator.cssCovert);
     const expressionResult = R.compose(
         countExpression,
         getLocalOperators(calculator.localOperators),
@@ -22,13 +20,13 @@ const handleExpressionOperation = ({
     dispatch(numiActions.countExp(expressionResult, differenceIndex));
 };
 
-const cssConvert = (expression, cssConvertions) => {
+const cssConvert = (expression, cssConverters) => {
     let splittedExp = expression.split(" ");
     let separatingInd = splittedExp.indexOf("in");
     if(separatingInd !== -1 && separatingInd !== 0 && separatingInd !== splittedExp.length-1){
-        splittedExp[separatingInd-1] = "/" + cssConvertions[splittedExp[separatingInd-1]];
+        splittedExp[separatingInd-1] = "/" + cssConverters[splittedExp[separatingInd-1]];
         splittedExp[separatingInd] = "*";
-        splittedExp[separatingInd+1] = cssConvertions[splittedExp[separatingInd+1]];
+        splittedExp[separatingInd+1] = cssConverters[splittedExp[separatingInd+1]];
     }
     return splittedExp.join(" ");
 
@@ -56,7 +54,6 @@ const getLocalVariables = localVars => expression => {
 };
 
 const getLocalOperators = localOperators => expression => {
-    console.log("local ope: ", expression);
     const localValues = Object.values(localOperators);
     localValues.map((operatorArray, i) => {
         operatorArray.map(operator => {
@@ -67,8 +64,6 @@ const getLocalOperators = localOperators => expression => {
             }
         });
     });
-    console.log("local ope: ", expression);
-
     return expression;
 };
 

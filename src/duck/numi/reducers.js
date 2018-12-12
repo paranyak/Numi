@@ -71,7 +71,6 @@ const numiReducer = handleActions(
             '-': ['minus', 'subtract', 'without'],
             '*': ['times', 'multiplied by', 'mul'],
             '/': ['divide by', 'divide'],
-            '+100% of': ['% on'],
             '/100 *': ['% of'],
         },
         cssCovert:{

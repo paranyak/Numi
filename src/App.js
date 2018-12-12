@@ -17,6 +17,7 @@ class App extends Component {
         };
 
         this.handleExp = this.handleExp.bind(this);
+        this.reloadInformation = this.reloadInformation.bind(this);
     }
 
     saveExp(event) {
@@ -118,20 +119,26 @@ class App extends Component {
         }
     }
 
+    async getFixerData() {
+        const fetchingUrl =
+            process.env.REACT_APP_FIXER_URL +
+            '?access_key=' +
+            process.env.REACT_APP_ACCESS_KEY;
+        const response = await fetch(fetchingUrl);
+        const result = await response.json();
+        return result;
+    }
+
+    storeInLocalStorage(rates) {
+        let fixerData = [];
+        fixerData.push(rates);
+        localStorage.setItem('fixerData', JSON.stringify(fixerData));
+    }
+
     async reloadInformation() {
         if (!localStorage.getItem('fixerData')) {
-            //fetching data from Fixer
-            const fetchingUrl =
-                process.env.REACT_APP_FIXER_URL +
-                '?access_key=' +
-                process.env.REACT_APP_ACCESS_KEY;
-            const response = await fetch(fetchingUrl);
-            const result = await response.json();
-
-            //put in local storage
-            let fixerData = [];
-            fixerData.push(result.rates);
-            localStorage.setItem('fixerData', JSON.stringify(fixerData));
+            const result = await this.getFixerData();
+            this.storeInLocalStorage(result.rates);
         }
     }
 

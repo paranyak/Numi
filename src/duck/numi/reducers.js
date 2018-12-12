@@ -9,10 +9,15 @@ const numiReducer = handleActions(
             const differenceIndex = action.payload.ind;
             let result = [...state.result];
             result[differenceIndex] = resultExp;
+
+            let total = result.filter(n => n);
+            total = total.reduce((sum, current) => sum + current, 0);
+
             let newState = {
                 ...state,
                 error,
                 result,
+                total,
             };
             return newState;
         },
@@ -60,13 +65,20 @@ const numiReducer = handleActions(
         error: false,
         result: [''],
         localVars: {},
+        total: 0,
         localOperators: {
             '+': ['plus', 'and', 'with', 'add'],
             '-': ['minus', 'subtract', 'without'],
             '*': ['times', 'multiplied by', 'mul'],
             '/': ['divide by', 'divide'],
+            '+100% of': ['% on'],
             '/100 *': ['% of'],
         },
+        cssCovert:{
+            'px': 96,
+            'cm': 2.54,
+            'pt': 72
+        }
     }
 );
 

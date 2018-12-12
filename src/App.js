@@ -99,7 +99,6 @@ class App extends Component {
                 if (currentLines[i].toLowerCase() === TOTAL)
                     this.countTotal(differenceIndex[i]);
                 else if (currentLines[i].indexOf(':') !== -1) {
-                    // if it is assigning variable
                     let variableIndex = currentLines[i].indexOf(':');
                     this.handleExp({
                         expression: currentLines[i],
@@ -140,11 +139,18 @@ class App extends Component {
         const { numi } = this.props;
         return (
             <div className="numi">
-                <textarea
-                    className="numi-expression"
-                    onKeyUp={e => this.saveExp(e)}
-                    onChange={e => this.handleChange(e)}
-                />
+                <div>
+                    <textarea
+                        className="numi-expression"
+                        onKeyUp={e => this.saveExp(e)}
+                        onChange={e => this.handleChange(e)}
+                    />
+                    <textarea
+                        readOnly={true}
+                        className="numi-total"
+                        value={' TOTAL :  ' + numi.total}
+                    />
+                </div>
                 <textarea
                     className="numi-result"
                     readOnly={true}

@@ -1,3 +1,5 @@
+import * as R from 'ramda'
+
 import numiActions from './actions';
 
 const handleExpressionOperation = ({
@@ -7,19 +9,9 @@ const handleExpressionOperation = ({
 }) => (dispatch, getState) => {
     const { calculator } = getState();
     if (variableIndex) expression = expression.slice(variableIndex + 1);
-    expression = getDataFromFixer(expression);
-    expression = getLocalVariables(expression, calculator.localVars);
-    expression = getLocalOperators(expression, calculator.localOperators);
-    let expressionResult = countExpression(expression);
+    const expressionResult = R.compose(countExpression, getLocalOperators( calculator.localOperators),getLocalVariables(calculator.localVars),  getDataFromFixer)(expression);
     dispatch(numiActions.countExp(expressionResult, differenceIndex));
 
-    //try to make compose
-
-    // const example = compose(
-    //     getLocalOperators,
-    //     getLocalVariables,
-    //     getDataFromFixer
-    // )(expression, calculator.localVars , calculator.localOperators) ;
 };
 
 const getDataFromFixer = expression => {
@@ -33,7 +25,7 @@ const getDataFromFixer = expression => {
     return expression;
 };
 
-const getLocalVariables = (expression, localVars) => {
+const getLocalVariables = localVars => expression => {
     const localVariables = Object.keys(localVars).join('|');
     if (localVariables) {
         expression = expression
@@ -43,7 +35,7 @@ const getLocalVariables = (expression, localVars) => {
     return expression;
 };
 
-const getLocalOperators = (expression, localOperators) => {
+const getLocalOperators = localOperators => expression => {
     const localValues = Object.values(localOperators);
     localValues.map((operatorArray, i) => {
         operatorArray.map(operator => {

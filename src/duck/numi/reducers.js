@@ -35,6 +35,8 @@ const numiReducer = handleActions(
         [types.COUNT_TOTAL]: (state, action) => {
             let differenceIndex = action.payload.ind;
             let expForTotal = state.result.slice(0, differenceIndex);
+            //delete from array with results empty strings
+            expForTotal = expForTotal.filter(n => n);
             let result = [...state.result];
             let total_result = expForTotal.reduce(
                 (sum, current) => sum + current,
